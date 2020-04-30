@@ -1,0 +1,182 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sites_wadck01chr_name": {
+            "defaultValue": "wadck01chr",
+            "type": "String"
+        },
+        "serverfarms_ASP_DEVOPS_CHR_name": {
+            "defaultValue": "ASP-DEVOPS-CHR",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('serverfarms_ASP_DEVOPS_CHR_name')]",
+            "location": "Brazil South",
+            "sku": {
+                "name": "F1",
+                "tier": "Free",
+                "size": "F1",
+                "family": "F",
+                "capacity": 1
+            },
+            "kind": "linux",
+            "properties": {
+                "perSiteScaling": false,
+                "maximumElasticWorkerCount": 1,
+                "isSpot": false,
+                "reserved": true,
+                "isXenon": false,
+                "hyperV": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('sites_wadck01chr_name')]",
+            "location": "Brazil South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ASP_DEVOPS_CHR_name'))]"
+            ],
+            "kind": "app,linux,container",
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('sites_wadck01chr_name'), '.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "[concat(parameters('sites_wadck01chr_name'), '.scm.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ASP_DEVOPS_CHR_name'))]",
+                "reserved": true,
+                "isXenon": false,
+                "hyperV": false,
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": false,
+                "clientCertEnabled": false,
+                "hostNamesDisabled": false,
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": false,
+                "redundancyMode": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_wadck01chr_name'), '/web')]",
+            "location": "Brazil South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_wadck01chr_name'))]"
+            ],
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php",
+                    "hostingstart.html"
+                ],
+                "netFrameworkVersion": "v4.0",
+                "linuxFxVersion": "DOCKER|carloshramos/dockerdemo:74",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "remoteDebuggingVersion": "VS2019",
+                "httpLoggingEnabled": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$wadck01chr",
+                "scmType": "VSTSRM",
+                "use32BitWorkerProcess": true,
+                "webSocketsEnabled": false,
+                "alwaysOn": false,
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": false
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "localMySqlEnabled": false,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "ftpsState": "AllAllowed",
+                "reservedInstanceCount": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/deployments",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_wadck01chr_name'), '/11588281604701')]",
+            "location": "Brazil South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_wadck01chr_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author": "Hosted Agent",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"Deployment\",\"buildId\":\"74\",\"releaseId\":\"1\",\"buildNumber\":\"74\",\"releaseName\":\"Release-1\",\"collectionUrl\":\"https://dev.azure.com/chrdevopsbr/\",\"teamProject\":\"ad2ed515-b480-49e4-96a7-4eeb6da68b78\",\"buildProjectUrl\":\"https://dev.azure.com/chrdevopsbr/ad2ed515-b480-49e4-96a7-4eeb6da68b78\",\"repositoryUrl\":\"\",\"teamProjectName\":\"WebApp - AspNetCore 3.0 - Docker\",\"slotName\":\"production\"}",
+                "start_time": "2020-04-30T21:20:05.8822679Z",
+                "end_time": "2020-04-30T21:20:05.8822679Z",
+                "active": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_wadck01chr_name'), '/', parameters('sites_wadck01chr_name'), '.azurewebsites.net')]",
+            "location": "Brazil South",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_wadck01chr_name'))]"
+            ],
+            "properties": {
+                "siteName": "wadck01chr",
+                "hostNameType": "Verified"
+            }
+        }
+    ]
+}
