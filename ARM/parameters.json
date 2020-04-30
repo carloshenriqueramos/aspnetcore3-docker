@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "sites_wadck01chr_name": {
-            "value": null
+            "value": "wadck01chr"
         },
         "serverfarms_ASP_DEVOPS_CHR_name": {
-            "value": null
+            "value": "ASP-DEVOPS-CHR"
         }
     }
 }
